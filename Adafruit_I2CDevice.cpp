@@ -11,6 +11,30 @@ Adafruit_I2CDevice::Adafruit_I2CDevice(uint8_t addr, TwoWire *theWire) {
   _addr = addr;
   _wire = theWire;
   _begun = false;
+  _sdaPin = -1;
+  _sclPin = -1;
+#ifdef ARDUINO_ARCH_SAMD
+  _maxBufferSize = 250; // as defined in Wire.h's RingBuffer
+#elif defined(ESP32)
+  _maxBufferSize = I2C_BUFFER_LENGTH;
+#else
+  _maxBufferSize = 32;
+#endif
+}
+
+/*!
+ *    @brief  Create an I2C device at a given address
+ *    @param  addr The 7-bit I2C address for the device
+ *    @param  sdaPin The I2C SDA pin to use
+ *    @param  sclPin The I2C SCL pin to use
+ *    @param  theWire The I2C bus to use, defaults to &Wire
+ */
+Adafruit_I2CDevice::Adafruit_I2CDevice(uint8_t addr, int sdaPin, int sclPin, TwoWire *theWire) {
+  _addr = addr;
+  _wire = theWire;
+  _begun = false;
+  _sdaPin = sdaPin;
+  _sclPin = sclPin;
 #ifdef ARDUINO_ARCH_SAMD
   _maxBufferSize = 250; // as defined in Wire.h's RingBuffer
 #elif defined(ESP32)
@@ -28,7 +52,7 @@ Adafruit_I2CDevice::Adafruit_I2CDevice(uint8_t addr, TwoWire *theWire) {
  *    @return True if I2C initialized and a device with the addr found
  */
 bool Adafruit_I2CDevice::begin(bool addr_detect) {
-  _wire->begin();
+  _wire->begin(_sdaPin, _sclPin);
   _begun = true;
 
   if (addr_detect) {

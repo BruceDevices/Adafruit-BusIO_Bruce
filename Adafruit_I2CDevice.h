@@ -8,6 +8,7 @@
 class Adafruit_I2CDevice {
 public:
   Adafruit_I2CDevice(uint8_t addr, TwoWire *theWire = &Wire);
+  Adafruit_I2CDevice(uint8_t addr, int sdaPin = -1, int sclPin = -1, TwoWire *theWire = &Wire);
   uint8_t address(void);
   bool begin(bool addr_detect = true);
   void end(void);
@@ -26,6 +27,8 @@ public:
   size_t maxBufferSize() { return _maxBufferSize; }
 
 private:
+  int _sdaPin;
+  int _sclPin;
   uint8_t _addr;
   TwoWire *_wire;
   bool _begun;
