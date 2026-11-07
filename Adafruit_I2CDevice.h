@@ -22,6 +22,12 @@ public:
                        bool stop = false);
   bool setSpeed(uint32_t desiredclk);
 
+  /*!   @brief  Mark the TwoWire as owned by the caller: begin() then won't
+   *    (re)initialize it. Use when the bus was already started elsewhere (e.g.
+   *    on Wire1, on custom pins, or an adapter that isn't a real controller).
+   *    @param  external true if the caller manages the bus */
+  void setExternalWire(bool external) { _externalWire = external; }
+
   /*!   @brief  How many bytes we can read in a transaction
    *    @return The size of the Wire receive/transmit buffer */
   size_t maxBufferSize() { return _maxBufferSize; }
@@ -32,6 +38,7 @@ private:
   uint8_t _addr;
   TwoWire *_wire;
   bool _begun;
+  bool _externalWire = false;
   size_t _maxBufferSize;
   bool _read(uint8_t *buffer, size_t len, bool stop);
 };
